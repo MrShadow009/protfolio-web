@@ -6,7 +6,7 @@ The site combines **immersive animations**, **responsive design**, and **interac
 ---
 
 ## 📸 Preview
-![Portfolio Screenshot](ss-1.png)
+![ss](ss-1.png)
 
 ---
 
