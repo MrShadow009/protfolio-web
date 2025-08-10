@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal Portfolio - Janaka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2a2a2a;
+            --neon-green: #00ff41;
+            --neon-cyan: #00ffff;
+            --neon-purple: #ff00ff;
+            --neon-orange: #ff6600;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --text-muted: #666666;
+            --border-color: #333333;
+            --glow-intensity: 0 0 20px;
+        }
+
+        body {
+            font-family: 'Fira Code', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            min-height: 100vh;
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Terminal Header */
+        .terminal-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            padding: 0.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .dot.red { background: #ff5f56; }
+        .dot.yellow { background: #ffbd2e; }
+        .dot.green { background: #27c93f; }
+
+        .dot:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .terminal-title {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* ID Card */
+        .id-card {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 2rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .id-card:hover {
+            transform: translateY(-5px) rotateY(5deg);
+            box-shadow: 
+                var(--glow-intensity) var(--neon-green),
+                0 10px 30px rgba(0, 255, 65, 0.3);
+            border-color: var(--neon-green);
+        }
+
+        .profile-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            display: block;
+            border: 3px solid var(--neon-cyan);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-photo::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, var(--neon-cyan), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+            opacity: 0;
+        }
+
+        .id-card:hover .profile-photo::before {
+            animation: rotate 2s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .profile-photo:hover {
+            transform: scale(1.1);
+            box-shadow: var(--glow-intensity) var(--neon-cyan);
+        }
+
+        .name {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--neon-green), var(--neon-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .designation {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .contact-item:hover {
+            background: var(--bg-tertiary);
+            transform: translateX(5px);
+            box-shadow: var(--glow-intensity) var(--neon-purple);
+        }
+
+        .contact-icon {
+            color: var(--neon-purple);
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding-top: 60px;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .section:nth-child(1) { animation-delay: 0.2s; }
+        .section:nth-child(2) { animation-delay: 0.4s; }
+        .section:nth-child(3) { animation-delay: 0.6s; }
+        .section:nth-child(4) { animation-delay: 0.8s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--neon-green);
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--neon-green), transparent);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Typing Animation */
+        .typing-text {
+            display: inline-block;
+            border-right: 2px solid var(--neon-green);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { border-color: var(--neon-green); }
+            51%, 100% { border-color: transparent; }
+        }
+
+        /* About Section */
+        .about-text {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 3px solid var(--neon-cyan);
+            transition: all 0.3s ease;
+        }
+
+        .about-text:hover {
+            transform: translateX(5px);
+            box-shadow: var(--glow-intensity) var(--neon-cyan);
+        }
+
+        /* Skills Section */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .skill-item {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .skill-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--glow-intensity) var(--neon-orange);
+            border-color: var(--neon-orange);
+        }
+
+        .skill-name {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .skill-bar {
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .skill-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan));
+            border-radius: 4px;
+            transition: width 1.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Projects Section */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .project-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,0,255,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .project-card:hover::before {
+            left: 100%;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--glow-intensity) var(--neon-purple);
+            border-color: var(--neon-purple);
+        }
+
+        .project-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--neon-cyan);
+            margin-bottom: 0.5rem;
+        }
+
+        .project-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .tech-tag {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .tech-tag:hover {
+            background: var(--neon-purple);
+            color: var(--bg-primary);
+            transform: scale(1.1);
+        }
+
+        /* Contact Section */
+        .contact-form {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--neon-cyan);
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            color: var(--text-primary);
+            font-family: 'Fira Code', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--neon-green);
+            box-shadow: var(--glow-intensity) var(--neon-green);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, var(--neon-green), var(--neon-cyan));
+            color: var(--bg-primary);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.5s ease;
+        }
+
+        .submit-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--glow-intensity) var(--neon-green);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .id-card {
+                position: relative;
+                top: 0;
+                margin-bottom: 2rem;
+            }
+
+            .terminal-header {
+                padding: 0.5rem 1rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-photo {
+                width: 120px;
+                height: 120px;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--neon-green);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--neon-cyan);
+        }
+    </style>
+</head>
+<body>
+    <!-- Terminal Header -->
+    <div class="terminal-header">
+        <div class="terminal-dots">
+            <div class="dot red"></div>
+            <div class="dot yellow"></div>
+            <div class="dot green"></div>
+        </div>
+        <div class="terminal-title">Janaka@portfolio:~</div>
+    </div>
+
+    <div class="container">
+        <!-- Left Side ID Card -->
+        <aside class="id-card">
+            <img src="https://via.placeholder.com/150/0a0a0a/00ff41?text=JD" alt="" class="profile-photo">
+            <h1 class="name">Janaka Tejeswar Valluru</h1>
+            <p class="designation">Full Stack Developer & Cybersecurity Enthusiast</p>
+            
+            <div class="contact-info">
+                <div class="contact-item">
+                    <span class="contact-icon">📧</span>
+                    <span>exmaple@email.com</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon">📱</span>
+                    <span>+91 xxxxx xxxxx</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon">🌐</span>
+                    <span>portfolio</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon">📍</span>
+                    <span>Tirupati , Andhra Pradesh</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon">💼</span>
+                    <span style="color: aliceblue;"><a href="www.linkedin.com/in/janaka-tejeswar-valluru-46821a325">linkedin</a></span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon">🐙</span>
+                    <span ><a href="https://github.com/MrShadow009">GitHub</a></span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- About Section -->
+            <section class="section">
+                <h2 class="section-title typing-text">$ cat about.txt</h2>
+                <div class="about-text">
+                    <p>Welcome to my digital realm! I'm a passionate full-stack developer with 5+ years of experience crafting digital experiences that bridge the gap between functionality and aesthetics. My journey spans from building scalable microservices to creating immersive web applications.</p>
+                    <br>
+                    <p>When I'm not coding, you'll find me exploring cybersecurity challenges, contributing to open-source projects, or diving deep into the latest tech trends. I believe in writing clean, efficient code that not only works but tells a story.</p>
+                </div>
+            </section>
+
+            <!-- Skills Section -->
+            <section class="section">
+                <h2 class="section-title typing-text">$ ls -la skills/</h2>
+                <div class="skills-grid">
+                    <div class="skill-item">
+                        <div class="skill-name">
+                            <span>JavaScript/TypeScript</span>
+                            <span>95%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-width="95"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">
+                            <span>Python</span>
+                            <span>90%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-width="90"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">
+                            <span>React/Next.js</span>
+                            <span>88%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-width="88"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">
+                            <span>Node.js/Express</span>
+                            <span>92%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-width="92"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">
+                            <span>Docker/Kubernetes</span>
+                            <span>85%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-width="85"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">
+                            <span>AWS/Cloud</span>
+                            <span>80%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-width="80"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Projects Section -->
+            <section class="section">
+                <h2 class="section-title typing-text">$ ./projects.sh</h2>
+                <div class="projects-grid">
+                    <div class="project-card">
+                        <h3 class="project-title">🔐 SecureVault</h3>
+                        <p>End-to-end encrypted password manager with zero-knowledge architecture. Features include biometric authentication, secure sharing, and breach monitoring.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">React</span>
+                            <span class="tech-tag">Node.js</span>
+                            <span class="tech-tag">PostgreSQL</span>
+                            <span class="tech-tag">WebCrypto API</span>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <h3 class="project-title">🚀 DevFlow</h3>
+                        <p>AI-powered development workflow automation tool that optimizes CI/CD pipelines, predicts build failures, and suggests performance improvements.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">TensorFlow</span>
+                            <span class="tech-tag">Docker</span>
+                            <span class="tech-tag">Kubernetes</span>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <h3 class="project-title">🌐 QuantumMesh</h3>
+                        <p>Decentralized CDN leveraging WebRTC for peer-to-peer content delivery. Reduces bandwidth costs by 70% and improves global content accessibility.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">WebRTC</span>
+                            <span class="tech-tag">Go</span>
+                            <span class="tech-tag">Redis</span>
+                            <span class="tech-tag">Blockchain</span>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <h3 class="project-title">🤖 CodeSentinel</h3>
+                        <p>Static analysis tool that uses machine learning to detect security vulnerabilities in code before deployment. Integrates with GitHub Actions.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">TypeScript</span>
+                            <span class="tech-tag">AST</span>
+                            <span class="tech-tag">ML</span>
+                            <span class="tech-tag">GitHub API</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Section -->
+            <section class="section">
+                <h2 class="section-title typing-text">$ ./contact.sh</h2>
+                <form class="contact-form" id="contactForm">
+                    <div class="form-group">
+                        <label class="form-label">$ echo "Enter your name:"</label>
+                        <input type="text" class="form-input" placeholder="Your Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">$ echo "Enter your email:"</label>
+                        <input type="email" class="form-input" placeholder="your.email@domain.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">$ echo "Subject:"</label>
+                        <input type="text" class="form-input" placeholder="Project Discussion / Collaboration / Question">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">$ echo "Message:"</label>
+                        <textarea class="form-input" rows="5" placeholder="Let's build something amazing together..." required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        $ send_message.sh
+                    </button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Typing Animation
+        function typeWriter(element, text, speed = 50) {
+            let i = 0;
+            element.innerHTML = '';
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        // Initialize typing animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const typingElements = document.querySelectorAll('.typing-text');
+            const originalTexts = Array.from(typingElements).map(el => el.textContent);
+            
+            typingElements.forEach((element, index) => {
+                setTimeout(() => {
+                    typeWriter(element, originalTexts[index], 30);
+                }, index * 500);
+            });
+
+            // Animate skill bars
+            const skillBars = document.querySelectorAll('.skill-progress');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const width = entry.target.getAttribute('data-width');
+                        entry.target.style.width = width + '%';
+                    }
+                });
+            });
+
+            skillBars.forEach(bar => observer.observe(bar));
+
+            // Smooth scroll for navigation
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Form submission
+            document.getElementById('contactForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form data
+                const formData = new FormData(this);
+                const name = this.querySelector('input[type="text"]').value;
+                const email = this.querySelector('input[type="email"]').value;
+                const subject = this.querySelectorAll('input[type="text"]')[1].value;
+                const message = this.querySelector('textarea').value;
+
+                // Simulate form submission
+                const submitBtn = this.querySelector('.submit-btn');
+                const originalText = submitBtn.textContent;
+                
+                submitBtn.textContent = '$ sending...';
+                submitBtn.style.background = 'linear-gradient(45deg, #ff6600, #ff00ff)';
+                
+                setTimeout(() => {
+                    alert(`Message sent successfully!\n\nFrom: ${name}\nEmail: ${email}\nSubject: ${subject}\nMessage: ${message}`);
+                    
+                    // Reset form
+                    this.reset();
+                    submitBtn.textContent = originalText;
+                    submitBtn.style.background = 'linear-gradient(45deg, var(--neon-green), var(--neon-cyan))';
+                }, 2000);
+            });
+
+            // Add hover effects to project cards
+            document.querySelectorAll('.project-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const title = this.querySelector('.project-title').textContent;
+                    alert(`Opening ${title} project details...\n\nThis would typically navigate to a detailed project page or open a modal with more information.`);
+                });
+            });
+
+            // Add terminal-like cursor blinking effect
+            setInterval(() => {
+                document.querySelectorAll('.typing-text').forEach(el => {
+                    if (el.textContent.includes('|')) {
+                        el.textContent = el.textContent.replace('|', '');
+                    } else {
+                        el.textContent += '|';
+                    }
+                });
+            }, 500);
+
+            // Parallax effect for ID card
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const idCard = document.querySelector('.id-card');
+                if (idCard) {
+                    idCard.style.transform = `translateY(${scrolled * 0.1}px)`;
+                }
+            });
+
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'k') {
+                    e.preventDefault();
+                    // Clear console effect
+                    console.clear();
+                    console.log('%c Terminal Portfolio Loaded', 'color: #00ff41; font-size: 20px; font-family: "Fira Code", monospace;');
+                }
+            });
+
+            // Easter egg
+            let konamiCode = [];
+            const secretCode = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // ↑↑↓↓←→←→BA
+            
+            document.addEventListener('keydown', function(e) {
+                konamiCode.push(e.keyCode);
+                if (konamiCode.length > secretCode.length) {
+                    konamiCode.shift();
+                }
+                
+                if (konamiCode.join(',') === secretCode.join(',')) {
+                    document.body.style.animation = 'rainbow 2s infinite';
+                    console.log('%c 🎮 Konami Code Activated! 🎮', 'color: #ff00ff; font-size: 24px; font-family: "Orbitron", monospace;');
+                }
+            });
+
+            // Add CSS for rainbow animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes rainbow {
+                    0% { filter: hue-rotate(0deg); }
+                    100% { filter: hue-rotate(360deg); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+
+        // Console welcome message
+        console.log('%c Welcome to my Terminal Portfolio!', 'color: #00ff41; font-size: 16px; font-family: "Fira Code", monospace;');
+        console.log('%c Try pressing Ctrl+K to clear console or use the Konami code (↑↑↓↓←→←→BA) for a surprise!', 'color: #00ffff; font-size: 12px; font-family: "Fira Code", monospace;');
+    </script>
+</body>
+</html>
